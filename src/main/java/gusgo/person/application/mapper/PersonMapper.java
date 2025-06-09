@@ -16,9 +16,9 @@ public interface PersonMapper {
 
     PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);
 
-    @Mapping(target = "isCustomer", expression = "java(person.getIsCustomer() ? \"YES\" : \"NO\")")
-    @Mapping(target = "isProvider", expression = "java(person.getIsProvider() ? \"YES\" : \"NO\")")
-    @Mapping(target = "isBranch", expression = "java(person.getIsBranch() ? \"YES\" : \"NO\")")
+    @Mapping(target = "isCustomer", expression = "java(person.getIsCustomer() != null && person.getIsCustomer() ? \"YES\" : \"NO\")")
+    @Mapping(target = "isProvider", expression = "java(person.getIsProvider() != null && person.getIsProvider() ? \"YES\" : \"NO\")")
+    @Mapping(target = "isBranch", expression = "java(person.getIsBranch() != null && person.getIsBranch() ? \"YES\" : \"NO\")")
     @Mapping(target = "type", expression = "java(\"BUSINESS\")")
     @Mapping(source = "documentCNPJ", target = "mainDocument")
     @Mapping(source = "documentIE", target = "secondaryDocument")
@@ -26,8 +26,8 @@ public interface PersonMapper {
 
     List<PersonDTO> businessPersonToDTO(List<BusinessPerson> people);
 
-    @Mapping(target = "isCustomer", expression = "java(person.getIsCustomer() ? \"YES\" : \"NO\")")
-    @Mapping(target = "isProvider", expression = "java(person.getIsProvider() ? \"YES\" : \"NO\")")
+    @Mapping(target = "isCustomer", expression = "java(person.getIsCustomer() != null && person.getIsCustomer() ? \"YES\" : \"NO\")")
+    @Mapping(target = "isProvider", expression = "java(person.getIsProvider() != null && person.getIsProvider() ? \"YES\" : \"NO\")")
     @Mapping(target = "isBranch", expression = "java(\"NO\")")
     @Mapping(target = "type", expression = "java(\"INDIVIDUAL\")")
     @Mapping(source = "documentCPF", target = "mainDocument")

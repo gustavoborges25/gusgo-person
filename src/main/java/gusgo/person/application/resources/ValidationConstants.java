@@ -20,9 +20,9 @@ public class ValidationConstants {
 
     public static final String BRANCH_CANNOT_BE_A_PROVIDER = "branch cannot be a provider";
 
-    public static final String PHONE_IS_MANDATORY = isMandatory("Phone Number");
+    public static final String PHONE_IS_MANDATORY = isMandatory("At least one phone");
 
-    public static final String EMAIL_IS_MANDATORY = isMandatory("Email");
+    public static final String EMAIL_IS_MANDATORY = isMandatory("At least one email");
 
     public static final String ADDRESS_IS_MANDATORY = isMandatory("At least one address");
 

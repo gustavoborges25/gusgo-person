@@ -10,6 +10,7 @@ import gusgo.person.rest.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,9 @@ public class AddressServiceImpl implements AddressService {
         List<Address> existingAddresses = repository.findAll();
         var existingAddressMap = existingAddresses.stream().collect(Collectors.toMap(Address::getId, address -> address));
 
+        if (person.getAddresses() == null) {
+            person.setAddresses(new ArrayList<>());
+        }
         person.getAddresses().clear();
 
         addressDTOS.forEach(addressDTO -> {

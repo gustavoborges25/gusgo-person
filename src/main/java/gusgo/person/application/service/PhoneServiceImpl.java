@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +29,9 @@ public class PhoneServiceImpl implements PhoneService {
         List<Phone> existingPhones = repository.findAll();
         var existingPhoneMap = existingPhones.stream().collect(Collectors.toMap(Phone::getId, phone -> phone));
 
+        if (person.getPhones() == null) {
+            person.setPhones(new ArrayList<>());
+        }
         person.getPhones().clear();
 
         phoneDTOS.forEach(phoneDTO -> {

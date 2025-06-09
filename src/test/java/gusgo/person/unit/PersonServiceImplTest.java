@@ -17,11 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,73 +44,61 @@ class PersonServiceImplTest {
     @InjectMocks
     private PersonServiceImpl personService;
 
-
-
-    @Test
-    void testCreate_ValidPersonType() throws BusinessException {
-        PersonDTO personDTO = new PersonDTO();
-        personDTO.setType("BUSINESS");
-
-        BusinessPerson businessPerson = new BusinessPerson();
-
-        when(businessPersonFactory.create(personDTO)).thenReturn(businessPerson);
-
-        PersonDTO result = personService.create(personDTO);
-
-        assertEquals(personDTO, result);
-        verify(businessPersonFactory, times(1)).create(personDTO);
-    }
-
     @Test
     void testCreate_InvalidPersonType() {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setType("INVALID_TYPE");
 
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            personService.create(personDTO);
-        });
+        BusinessException exception = assertThrows(
+                BusinessException.class, () -> personService.create(personDTO));
 
-        assertEquals("INVALID_PERSON_TYPE", exception.getMessage());
+        assertEquals("Invalid person type", exception.getMessage());
+    }
+
+    @Test
+    void testCreate_BusinessPersonType() throws BusinessException {
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setType("BUSINESS");
+
+        PersonDTO result = personService.create(personDTO);
+
+        assertEquals(personDTO, result);
+        verify(businessPersonFactory, times(1)).create(personDTO);
+        verify(individualPersonFactory, times(0)).create(personDTO);
+    }
+
+    @Test
+    void testCreate_IndividualPersonType() throws BusinessException {
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setType("INDIVIDUAL");
+
+        PersonDTO result = personService.create(personDTO);
+
+        assertEquals(personDTO, result);
+        verify(businessPersonFactory, times(0)).create(personDTO);
+        verify(individualPersonFactory, times(1)).create(personDTO);
     }
 
     @Test
     void testFindAll() {
-        when(businessPersonRepository.findAll()).thenReturn(Collections.emptyList());
-        when(individualPersonRepository.findAll()).thenReturn(Collections.emptyList());
+        List<BusinessPerson> businessPeople = new ArrayList<>();
+        BusinessPerson businessPerson = new BusinessPerson();
+        businessPerson.setName("Company test");
+        businessPeople.add(businessPerson);
+
+        List<IndividualPerson> individualPeople = new ArrayList<>();
+        IndividualPerson individualPerson = new IndividualPerson();
+        individualPerson.setName("Individual test");
+        individualPeople.add(individualPerson);
+
+        when(businessPersonRepository.findAll()).thenReturn(businessPeople);
+        when(individualPersonRepository.findAll()).thenReturn(individualPeople);
 
         List<PersonDTO> result = personService.findAll();
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testUploadBp_ValidFile() throws Exception {
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.isEmpty()).thenReturn(false);
-        when(file.getInputStream()).thenThrow(new IOException());
-
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            personService.uploadBp(file);
-        });
-
-        assertEquals("INVALID_FILE", exception.getMessage());
-    }
-
-    @Test
-    void testUpdate_ValidPersonType() throws BusinessException {
-        UUID id = UUID.randomUUID();
-        PersonDTO personDTO = new PersonDTO();
-        personDTO.setType("INDIVIDUAL");
-
-        IndividualPerson individualPerson = new IndividualPerson();
-
-        when(individualPersonFactory.update(id, personDTO)).thenReturn(individualPerson);
-
-        PersonDTO result = personService.update(id, personDTO);
-
-        assertEquals(personDTO, result);
-        verify(individualPersonFactory, times(1)).update(id, personDTO);
+        assertFalse(result.isEmpty());
+        assertEquals("Company test", result.getFirst().getName());
+        assertEquals("Individual test", result.get(1).getName());
     }
 
     @Test
@@ -117,11 +107,51 @@ class PersonServiceImplTest {
         PersonDTO personDTO = new PersonDTO();
         personDTO.setType("INVALID_TYPE");
 
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            personService.update(id, personDTO);
-        });
+        BusinessException exception = assertThrows(
+                BusinessException.class, () -> personService.update(id, personDTO));
 
-        assertEquals("INVALID_PERSON_TYPE", exception.getMessage());
+        assertEquals("Invalid person type", exception.getMessage());
     }
 
+
+    @Test
+    void testUpdate_BusinessPersonType() throws BusinessException {
+        UUID id = UUID.randomUUID();
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setType("BUSINESS");
+
+        PersonDTO result = personService.update(id, personDTO);
+
+        assertEquals(personDTO, result);
+        verify(businessPersonFactory, times(1)).update(id, personDTO);
+        verify(individualPersonFactory, times(0)).update(id, personDTO);
+    }
+
+    @Test
+    void testUpdate_IndividualPersonType() throws BusinessException {
+        UUID id = UUID.randomUUID();
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setType("INDIVIDUAL");
+
+        PersonDTO result = personService.update(id, personDTO);
+
+        assertEquals(personDTO, result);
+        verify(businessPersonFactory, times(0)).update(id, personDTO);
+        verify(individualPersonFactory, times(1)).update(id, personDTO);
+    }
+
+
+    @Test
+    void testUploadBp_InvalidFile() throws Exception {
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getInputStream()).thenThrow(new IOException());
+
+        BusinessException exception = assertThrows(
+                BusinessException.class, () -> personService.uploadBp(file));
+
+        assertEquals("Invalid file", exception.getMessage());
+    }
+
+    // TODO falta testar arquivo válido(preciso confirmar padrao do arquivo ainda)
 }

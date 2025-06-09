@@ -53,8 +53,8 @@ public class IndividualPersonFactory implements PersonFactory {
         individualPerson.setName(personDto.getName());
         individualPerson.setNickname(personDto.getNickname());
         individualPerson.setErpCode(personDto.getErpCode());
-        individualPerson.setIsCustomer(personDto.getIsCustomer().equals("YES"));
-        individualPerson.setIsProvider(personDto.getIsProvider().equals("YES"));
+        individualPerson.setIsCustomer(personDto.getIsCustomer() != null && personDto.getIsCustomer().equals("YES"));
+        individualPerson.setIsProvider(personDto.getIsProvider() != null && personDto.getIsProvider().equals("YES"));
         individualPerson.setDocumentCPF(personDto.getMainDocument());
         individualPerson.setDocumentRG(personDto.getSecondaryDocument());
 

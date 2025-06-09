@@ -10,6 +10,7 @@ import gusgo.person.rest.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,9 @@ public class EmailServiceImpl implements EmailService {
         List<Email> existingEmails = repository.findAll();
         var existingEmailMap = existingEmails.stream().collect(Collectors.toMap(Email::getId, email -> email));
 
+        if (person.getEmails() == null) {
+            person.setEmails(new ArrayList<>());
+        }
         person.getEmails().clear();
 
         emailDTOS.forEach(emailDTO -> {

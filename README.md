@@ -9,7 +9,7 @@ This project allows users to manage a list of people, including their personal i
 ## Technologies Used
 
 - Java 21
-- Spring Boot 3.2.4
+- Spring Boot 3.5.0
 - Spring Data JPA
 - PostgreSQL
 - Lombok

@@ -54,8 +54,8 @@ public class BusinessPersonFactory implements PersonFactory {
         businessPerson.setName(personDto.getName());
         businessPerson.setNickname(personDto.getNickname());
         businessPerson.setErpCode(personDto.getErpCode());
-        businessPerson.setIsCustomer(personDto.getIsCustomer().equals("YES"));
-        businessPerson.setIsProvider(personDto.getIsProvider().equals("YES"));
+        businessPerson.setIsCustomer(personDto.getIsCustomer() != null && personDto.getIsCustomer().equals("YES"));
+        businessPerson.setIsProvider(personDto.getIsProvider() != null && personDto.getIsProvider().equals("YES"));
         businessPerson.setDocumentCNPJ(personDto.getMainDocument());
         businessPerson.setDocumentIE(personDto.getSecondaryDocument());
 
